@@ -63,7 +63,8 @@ def read_email(myemail, password):
         # 关闭连接
         mail_server.quit()
         array = [int(char) for char in content]
-        return array[0]
+        result = int("".join(map(str, array)))
+        return result
 
     except Exception as e:
         st.error('网络问题，请刷新页面')
@@ -100,7 +101,8 @@ def read_email_(myemail, password):
         # 关闭连接
         mail_server.quit()
         array = [int(char) for char in content]
-        return array[0]
+        result = int("".join(map(str, array)))
+        return result
 
     except Exception as e:
         st.error('网络问题，请刷新页面')
@@ -164,9 +166,9 @@ def instrunction():
     st.markdown('''观察虚拟角色的手势是否有效地传达其意图。判断这些手势是否有助于增强视频中的语音内容，是否能够更清晰地传递视频中表达的意思。''')
     st.markdown('''###### 注意事项：本实验专注于手势动作，不需要关注面部表情。''')
 
-#def QA(human_likeness, smoothness, num):
 def QA(human_likeness, smoothness, semantic_accuracy, num, method_num):
     number = (num-1) * method_num - 1
+
     st.markdown('''##### 1.手势真实性评分''')
     human_likeness[number+1] = st.slider("第一个人", 1, 5, 1, key=f"button{num}.1")
     human_likeness[number+2] = st.slider("第二个人", 1, 5, 1, key=f"button{num}.2")
@@ -189,8 +191,8 @@ def QA(human_likeness, smoothness, semantic_accuracy, num, method_num):
     if (human_likeness[number+1] == 1 and human_likeness[number+2] == 1 and human_likeness[number+3] == 1 and
         smoothness[number+1] == 1 and smoothness[number+2] == 1 and smoothness[number+3] == 1 and
         semantic_accuracy[number+1] == 1 and semantic_accuracy[number+2] == 1 and semantic_accuracy[number+3] == 1):
-        return False  # 返回 False 表示所有评分都为 1
-    return True  # 否则返回 True
+        return False
+    return True  
     
 @st.cache_data
 def play_video(file_name):
@@ -289,8 +291,11 @@ if __name__ == '__main__':
     dataset = "ablation"
 
     count = read_email(myemail, password)
-    if count>20: 
-        st.error("答题人数已满，感谢你的参与！")
+    #st.write(count)
+
+    if count>=20: 
+        st.error("答题人数已满，感谢你的理解！")
+        st.cache_data.clear()
     else:
         if "human_likeness" and "smoothness" and "semantic_accuracy" not in st.session_state:
             human_likeness = [1 for x in range(video_num*method_num)]
