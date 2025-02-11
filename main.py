@@ -184,6 +184,13 @@ def QA(human_likeness, smoothness, semantic_accuracy, num, method_num):
     semantic_accuracy[number+2] = st.slider("第二个人", 1, 5, 1, key=f"button{num}.10")
     semantic_accuracy[number+3] = st.slider("第三个人", 1, 5, 1, key=f"button{num}.11")
     #semantic_accuracy[number+4] = st.slider("第四个人", 1, 5, 1, key="button12")
+
+    # 检查所有评分是否都为1
+    if (human_likeness[number+1] == 1 and human_likeness[number+2] == 1 and human_likeness[number+3] == 1 and
+        smoothness[number+1] == 1 and smoothness[number+2] == 1 and smoothness[number+3] == 1 and
+        semantic_accuracy[number+1] == 1 and semantic_accuracy[number+2] == 1 and semantic_accuracy[number+3] == 1):
+        return False  # 返回 False 表示所有评分都为 1
+    return True  # 否则返回 True
     
 @st.cache_data
 def play_video(file_name):
@@ -217,12 +224,15 @@ def page(video_num, method_num):
 
     st.write("视频从左到右，依次对应第一、第二、第三人。")
     st.write("请评分1 - 5，1为最差，5为最好。")
-    QA(human_likeness, smoothness, semantic_accuracy, num, method_num)
+    res = QA(human_likeness, smoothness, semantic_accuracy, num, method_num)
 
     # 第1页
     if st.session_state["page_num"] == 1:
         if st.button("下一页"):
-            switch_page(st.session_state["page_num"] + 1)
+            if res:
+                switch_page(st.session_state["page_num"] + 1)
+            else:
+                st.warning("请回答当前页问题！")
 
     # 中间页
     if num > 1 and num < video_num:
@@ -230,7 +240,10 @@ def page(video_num, method_num):
         if col2.button("上一页"):
             switch_page(st.session_state["page_num"] - 1)
         if col1.button("下一页"):
-            switch_page(st.session_state["page_num"] + 1)
+            if res:
+                switch_page(st.session_state["page_num"] + 1)
+            else:
+                st.warning("请回答当前页问题！")
 
     # 最后一页
     if st.session_state["page_num"] == video_num:
@@ -240,9 +253,9 @@ def page(video_num, method_num):
 
         if not st.session_state.button_clicked:
             if col1.button("提交结果"):
-                if any(x == "" for x in human_likeness or x == "" for x in smoothness or x == "" for x in semantic_accuracy):
-                    st.warning("提交结果前请回答所有问题！")
-                if not any(x == "" for x in human_likeness or x == "" for x in smoothness or x == "" for x in semantic_accuracy):
+                if not res:
+                    st.warning("请回答当前页问题！")
+                else:
                     st.write('提交中...请耐心等待...')
                     count = read_email_(myemail, password)
                     count += 1
