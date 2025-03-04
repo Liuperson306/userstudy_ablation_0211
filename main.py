@@ -165,34 +165,32 @@ def instrunction():
     st.markdown('''##### 3. 手势语义准确度评分''')
     st.markdown('''观察虚拟角色的手势是否有效地传达其意图。判断这些手势是否有助于增强视频中的语音内容，是否能够更清晰地传递视频中表达的意思。''')
     st.markdown('''###### 注意事项：本实验专注于手势动作，不需要关注面部表情。''')
+    st.markdown('''###### 手机端用户可以在手机横屏状态下答题，如遇卡顿和视频播放不了的情况，建议在电脑端答题。''')
 
 def QA(human_likeness, smoothness, semantic_accuracy, num, method_num):
     number = (num-1) * method_num - 1
 
-    st.markdown('''##### 1.手势真实性评分''')
-    human_likeness[number+1] = st.slider("第一个人", 1, 5, 1, key=f"button{num}.1")
-    human_likeness[number+2] = st.slider("第二个人", 1, 5, 1, key=f"button{num}.2")
-    human_likeness[number+3] = st.slider("第三个人", 1, 5, 1, key=f"button{num}.3")
-    #human_likeness[number+4] = st.slider("第四个人", 1, 5, 1, key="button4")
+    for i in range(1, method_num+1):
+        col1, col2, col3, col4 = st.columns(4, gap="large")
+        with col1:
+            if i==1 : st.markdown(' .')
+            st.write(f"第 {i} 个人")
+        st.divider()
+        with col2:
+            if i==1 : st.markdown('''真实性''')
+            human_likeness[number+i] = st.feedback("stars", key=f"button{num}.{i}")
+        with col3:
+            if i==1 : st.markdown('''平滑性''')
+            smoothness[number+i] = st.feedback("stars", key=f"button{num}.{i+5}")
+        with col4:
+            if i==1 : st.markdown('''语义准确度''')
+            semantic_accuracy[number+i] = st.feedback("stars", key=f"button{num}.{i+10}")
 
-    st.markdown('''##### 2.手势自然性评分''')
-    smoothness[number+1] = st.slider("第一个人", 1, 5, 1, key=f"button{num}.5")
-    smoothness[number+2] = st.slider("第二个人", 1, 5, 1, key=f"button{num}.6")
-    smoothness[number+3] = st.slider("第三个人", 1, 5, 1, key=f"button{num}.7")
-    #smoothness[number+4] = st.slider("第四个人", 1, 5, 1, key="button8")
-
-    st.markdown('''##### 3.手势语义准确性评分''')
-    semantic_accuracy[number+1] = st.slider("第一个人", 1, 5, 1, key=f"button{num}.9")
-    semantic_accuracy[number+2] = st.slider("第二个人", 1, 5, 1, key=f"button{num}.10")
-    semantic_accuracy[number+3] = st.slider("第三个人", 1, 5, 1, key=f"button{num}.11")
-    #semantic_accuracy[number+4] = st.slider("第四个人", 1, 5, 1, key="button12")
-
-    # 检查所有评分是否都为1
-    if (human_likeness[number+1] == 1 and human_likeness[number+2] == 1 and human_likeness[number+3] == 1 and
-        smoothness[number+1] == 1 and smoothness[number+2] == 1 and smoothness[number+3] == 1 and
-        semantic_accuracy[number+1] == 1 and semantic_accuracy[number+2] == 1 and semantic_accuracy[number+3] == 1):
-        return False
-    return True  
+    # 检查是否有评分为None
+    if None in human_likeness[number+1:number+6] or None in smoothness[number+1:number+6] or None in semantic_accuracy[number+1:number+6]:
+        return True
+    
+    return True   
     
 @st.cache_data
 def play_video(file_name):
@@ -285,7 +283,7 @@ if __name__ == '__main__':
     st.set_page_config(page_title="userstudy")
     #st.cache_data.clear() # 初始化
     myemail = st.secrets["my_email"]["email"]  
-    password =  st.secrets["my_email"]["password"]
+    password = st.secrets["my_email"]["password"]
     video_num = 10
     method_num = 3
     dataset = "ablation"
