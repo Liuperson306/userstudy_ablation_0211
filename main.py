@@ -237,8 +237,8 @@ def page(video_num, method_num):
     # 中间页
     if num > 1 and num < video_num:
         col1, col2 = st.columns(2)
-        if col2.button("上一页"):
-            switch_page(st.session_state["page_num"] - 1)
+        # if col2.button("上一页"):
+        #     switch_page(st.session_state["page_num"] - 1)
         if col1.button("下一页"):
             if res:
                 switch_page(st.session_state["page_num"] + 1)
@@ -275,8 +275,8 @@ def page(video_num, method_num):
             st.cache_data.clear()
             st.success("Successfully submitted the results. Thank you for using it. Now you can exit the system.")
 
-        if col2.button("上一页"):
-            switch_page(st.session_state["page_num"] - 1)
+        # if col2.button("上一页"):
+        #     switch_page(st.session_state["page_num"] - 1)
 
 
 if __name__ == '__main__':
